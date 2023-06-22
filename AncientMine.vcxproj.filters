@@ -21,18 +21,18 @@
     <ClCompile Include="AncientMine.cpp">
       <Filter>Core\Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
+    <ClCompile Include="BaseObject.cpp">
       <Filter>Core\Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="BaseObject.cpp">
+    <ClCompile Include="Scene.cpp">
       <Filter>Core\Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Scene.h">
+    <ClInclude Include="BaseObject.h">
       <Filter>Core\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="BaseObject.h">
+    <ClInclude Include="Scene.h">
       <Filter>Core\Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

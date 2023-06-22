@@ -8,19 +8,22 @@ class Scene
 {
 private:
 
+	sf::RenderWindow window;
 	std::vector<BaseObject*> field;
 	sf::Event mainEvent;
-	bool isPerformed = true;
+	bool isGameRunning = true;
+	int fps = 60;
 
 public:
 
-	Scene() = default;
+	Scene();
 
-	void draw(sf::RenderWindow& window);
+	void draw();
 	void update(double delta);
 	void addObject(BaseObject* newOjbect);
 	void deleteObject(int index);
-	void checkEvents(sf::RenderWindow& window);
+	void checkEvents();
+	bool isPerformed();
 
 	~Scene();
 };

@@ -2,8 +2,18 @@
 
 using namespace sf;
 
-void Scene::draw(RenderWindow& window)
+Scene::Scene()
 {
+	window.create(VideoMode::getDesktopMode(), "AncientMine", Style::Fullscreen);
+	window.setFramerateLimit(60);
+	window.setVerticalSyncEnabled(true);
+	window.setMouseCursorVisible(false);
+}
+
+void Scene::draw()
+{
+	window.clear(Color(100, 100, 100));
+
 	for (size_t i = 0; i < field.size(); i++)
 	{
 		field[i]->draw(window);
@@ -12,6 +22,8 @@ void Scene::draw(RenderWindow& window)
 
 void Scene::update(double delta)
 {
+	this->checkEvents();
+
 	for (size_t i = 0; i < field.size(); i++)
 	{
 		field[i]->update(delta);
@@ -28,16 +40,21 @@ void Scene::deleteObject(int index)
 	field.erase(field.begin() + index);
 }
 
-void Scene::checkEvents(RenderWindow& window)
+void Scene::checkEvents()
 {
 	while (!window.pollEvent(mainEvent))
 	{
 		if (mainEvent.type == Event::Closed ||
 			(mainEvent.type == Event::KeyPressed && mainEvent.key.code == Keyboard::Key::Delete))
 		{
-			isPerformed = false;
+			isGameRunning = false;
 		}
 	}
+}
+
+bool Scene::isPerformed()
+{
+	return isGameRunning;
 }
 
 Scene::~Scene()
