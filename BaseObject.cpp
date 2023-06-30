@@ -18,6 +18,9 @@ BaseObject::BaseObject(Vector2f position, string name, string path)
 
 	baseRect.left = position.x;
 	baseRect.top = position.y;
+
+	showRect.setPosition(position);
+	showRect.setSize(Vector2f(baseRect.width, baseRect.height));
 }
 
 BaseObject::BaseObject(string name, string path)
@@ -34,11 +37,19 @@ BaseObject::BaseObject(string name, string path)
 
 	baseRect.left = position.x;
 	baseRect.top = position.y;
+
+	showRect.setPosition(position);
+	showRect.setSize(Vector2f(baseRect.width, baseRect.height));
 }
 
 void BaseObject::draw(RenderWindow& window)
 {
 	window.draw(sprite);
+
+	if (rectanglesVisible)
+	{
+		window.draw(showRect);
+	}
 }
 
 void BaseObject::update(double delta) {}
@@ -55,4 +66,21 @@ void BaseObject::setPosition(Vector2f newPosition)
 
 	baseRect.left = position.x;
 	baseRect.top = position.y;
+
+	showRect.setPosition(position);
+}
+
+int BaseObject::getDamage()
+{
+	return damage;
+}
+
+void BaseObject::showRectangles()
+{
+	rectanglesVisible = !rectanglesVisible;
+}
+
+Rect<float>& BaseObject::getRect()
+{
+	return baseRect;
 }

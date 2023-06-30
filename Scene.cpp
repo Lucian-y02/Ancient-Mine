@@ -24,19 +24,19 @@ void Scene::update(double delta)
 {
 	this->checkEvents();
 
+	for (size_t i = 0; i < players.size(); i++)
+	{
+		if (!players[i]->isAlive())
+			isGameRunning = false;
+	}
+
 	for (size_t x = 0; x < fieldWidth; x++)
 	{
 		for (size_t y = 0; y < fieldHeigth; y++)
 		{
 			if (field[x][y] != NULL)
-				field[x][y]->update(delta);
+	field[x][y]->update(delta);
 		}
-	}
-
-	for (size_t i = 0; i < players.size(); i++)
-	{
-		if (!players[i]->isAlive())
-			players.erase(players.begin() + i);
 	}
 }
 
@@ -88,9 +88,13 @@ void Scene::checkEvents()
 		}
 		if (mainEvent.type == Event::KeyReleased && mainEvent.key.code == Keyboard::F1)
 		{
-			for (Player* player : players)
+			for (size_t x = 0; x < fieldWidth; x++)
 			{
-				player->showRectangles();
+				for (size_t y = 0; y < fieldHeigth; y++)
+				{
+					if (field[x][y] != NULL)
+						field[x][y]->showRectangles();
+				}
 			}
 		}
 	}
@@ -112,7 +116,8 @@ Scene::~Scene()
 	{
 		for (size_t y = 0; y < fieldHeigth; y++)
 		{
-			delete field[x][y];
+			if (field[x][y] != NULL)
+				delete field[x][y];
 		}
 	}
 }

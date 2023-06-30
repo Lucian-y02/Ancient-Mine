@@ -11,7 +11,10 @@ protected:
 	sf::Vector2f position;
 	sf::Texture texture;
 	sf::Sprite sprite;
+	sf::RectangleShape showRect;
 	sf::Rect<float> baseRect;
+	bool rectanglesVisible = false;
+	int damage = 0;
 
 public:
 
@@ -23,5 +26,8 @@ public:
 	virtual void draw(sf::RenderWindow& window);
 	std::string getName();
 	virtual void setPosition(sf::Vector2f newPosition);
+	int getDamage();
+	void showRectangles();
+	sf::Rect<float>& getRect();
 };
 

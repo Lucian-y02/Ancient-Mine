@@ -7,7 +7,6 @@ class Spikes : public BaseObject
 {
 protected:
 
-	int damage = 2;
 	std::string side;
 
 public:
@@ -15,5 +14,4 @@ public:
 	Spikes(std::string side);
 
 	void setPosition(sf::Vector2f newPosition) override;
-	int getDamage();
 };

@@ -6,16 +6,31 @@
 #include <string>
 #include <vector>
 
+class HealthBar
+{
+private:
+
+	sf::RectangleShape healthPoint;
+	int health;
+
+public:
+
+	HealthBar();
+
+	void update(int health);
+	void draw(sf::RenderWindow& window);
+};
+
+
 class Player: public BaseObject
 {
 private:
 	
 	// Прямоугольники
-	sf::RectangleShape showRect;
+	sf::RectangleShape showAdditionalRect;
 	sf::Rect<float> additionalRect;
 	float shiftWidth = 7; // Смещение дополнительного прямоугольника по оси OY
-	float shiftHeight = 16; // Смещение дополнительного прямоугольника по оси OX
-	sf::RectangleShape showAdditionalRect;
+	float shiftHeight = 5; // Смещение дополнительного прямоугольника по оси OX
 
 	std::vector<std::vector<BaseObject*>> field;
 
@@ -29,9 +44,12 @@ private:
 	double n = 1;
 	bool onGround = true;
 	bool jumpReady = true;
+	
+	float immortalTimer = 0.0;
+	float immortalCoolDown = 2.0;
 	bool immortal = false;
-	bool rectanglesVisible = false;
-	int health = 10;
+	int health = 7;
+	HealthBar healthBar;
 	
 public:
 
@@ -46,8 +64,8 @@ public:
 	void checkPressedKeyboard();
 	void checkPressedJoystickX();
 	void checkPressedJoystickD();
-	void setEnableImmortality(bool value);
 	bool isAlive();
 	void checkCollision(char axis);
-	void showRectangles();
+	void takeDamage(int damage);
+	void healing(int healthValue);
 };

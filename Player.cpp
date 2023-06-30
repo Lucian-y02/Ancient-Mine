@@ -4,23 +4,51 @@
 using namespace std;
 using namespace sf;
 
+#pragma region HealthBar
+
+HealthBar::HealthBar()
+{
+	health = 0;
+
+	healthPoint.setSize(Vector2f(15, 25));
+	healthPoint.setFillColor(Color(165, 48, 48, 200));
+}
+
+void HealthBar::update(int health)
+{
+	this->health = health;
+}
+
+void HealthBar::draw(RenderWindow& window)
+{
+	for (int i = 0; i < health; i++)
+	{
+		healthPoint.setPosition(Vector2f(30 + (17 * i), 30));
+		window.draw(healthPoint);
+	}
+}
+
+#pragma endregion
+
 Player::Player(vector<vector<BaseObject*>>& field, string controlType) :
 	BaseObject("player", "Textures/player.png") 
 {
 	this->controlType = controlType;
 	this->field = field;
 
+	healthBar.update(health);
+
 	// Отображение для основного прямоугольника
 	showRect.setSize(Vector2f(baseRect.width, baseRect.height));
-	showRect.setFillColor(Color(0, 200, 0, 150));
+	showRect.setFillColor(Color(50, 150, 50));
 
 	// Инициализация дополнительного прямоугольника
 	additionalRect.width = texture.getSize().x - (2 * shiftWidth);
-	additionalRect.height = texture.getSize().y - shiftHeight;
+	additionalRect.height = texture.getSize().y - (2 * shiftHeight);
 
 	// Отображение для дополнительного прямоугольника
 	showAdditionalRect.setSize(Vector2f(additionalRect.width, additionalRect.height));
-	showAdditionalRect.setFillColor(Color(0, 0, 200, 150));
+	showAdditionalRect.setFillColor(Color(50, 50, 150));
 }
 
 Player::Player(Vector2f position, vector<vector<BaseObject*>>& field, string controlType) :
@@ -29,25 +57,35 @@ Player::Player(Vector2f position, vector<vector<BaseObject*>>& field, string con
 	this->controlType = controlType;
 	this->field = field;
 
+	healthBar.update(health);
+
 	// Отображение для основного прямоугольника
 	showRect.setSize(Vector2f(baseRect.width, baseRect.height));
 	showRect.setPosition(Vector2f(baseRect.left, baseRect.top));
-	showRect.setFillColor(Color(0, 200, 0, 150));
+	showRect.setFillColor(Color(50, 150, 50));
 
 	// Инициализация дополнительного прямоугольника
 	additionalRect.width = texture.getSize().x - (2 * shiftWidth);
-	additionalRect.height = texture.getSize().y - shiftHeight;
+	additionalRect.height = texture.getSize().y - (2 * shiftHeight);
 	additionalRect.left = position.x + shiftWidth;
 	additionalRect.top = position.y + shiftHeight;
 
 	// Отображение для дополнительного прямоугольника
 	showAdditionalRect.setSize(Vector2f(additionalRect.width, additionalRect.height));
 	showAdditionalRect.setPosition(Vector2f(additionalRect.left, additionalRect.top));
-	showAdditionalRect.setFillColor(Color(0, 0, 200, 150));
+	showAdditionalRect.setFillColor(Color(50, 50, 150));
 }
 
 void Player::update(double delta)
 {
+	// Обновление таймеров
+	if (immortal)
+	{
+		immortalTimer += delta;
+		if (immortalTimer >= immortalCoolDown)
+			immortal = false;
+	}
+
 	velocity = Vector2f(0, 0);
 	
 	// Проверка на нажатия кнопок
@@ -112,6 +150,8 @@ void Player::draw(RenderWindow& window)
 		window.draw(showRect);
 		window.draw(showAdditionalRect);
 	}
+
+	healthBar.draw(window);
 }
 
 void Player::setPosition(Vector2f newPosition)
@@ -168,6 +208,13 @@ void Player::checkCollision(char axis)
 							jumpForceNow.y = 0;
 							position.y = (y + 1) * 64 + 0.1;
 						}
+					}
+				}
+				else if (additionalRect.intersects(field[x][y]->getRect()))
+				{
+					if (objectName == "spikes" && !immortal)
+					{
+						this->takeDamage(field[x][y]->getDamage());
 					}
 				}
 			}
@@ -264,12 +311,18 @@ void Player::setField(std::vector<std::vector<BaseObject*>>& field)
 	this->field = field;
 }
 
-void Player::setEnableImmortality(bool value)
+void Player::takeDamage(int damage)
 {
-	immortal = value;
+	health -= damage;
+	healthBar.update(health);
+
+	immortal = true;
+	immortalTimer = 0;
 }
 
-void Player::showRectangles()
+void Player::healing(int healthValue)
 {
-	rectanglesVisible = !rectanglesVisible;
+	health += healthValue;
+
+	healthBar.update(health);
 }

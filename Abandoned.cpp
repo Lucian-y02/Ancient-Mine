@@ -16,43 +16,49 @@ int main()
 
 	// Player
 	Player* player = new Player(mainScene.getField(), "joystickX");
-	mainScene.addPlayer(player, Vector2f(9, 3));
+	mainScene.addPlayer(player, Vector2f(4, 8));
 
 	// Walls
-	for (size_t x = 0; x < 30; x++)
-	{
-		mainScene.addObject(new Wall, Vector2f(x, 12));
-	}
+	mainScene.addObject(new Wall, Vector2f(2, 7));
+	mainScene.addObject(new Wall, Vector2f(2, 8));
+	mainScene.addObject(new Wall, Vector2f(2, 9));
+	mainScene.addObject(new Wall, Vector2f(3, 9));
+	mainScene.addObject(new Wall, Vector2f(4, 9));
+	mainScene.addObject(new Wall, Vector2f(5, 9));
+	mainScene.addObject(new Wall, Vector2f(5, 10));
+	mainScene.addObject(new Wall, Vector2f(6, 10));
+	mainScene.addObject(new Wall, Vector2f(7, 10));
+	mainScene.addObject(new Wall, Vector2f(7, 9));
+	mainScene.addObject(new Wall, Vector2f(8, 9));
+	mainScene.addObject(new Wall, Vector2f(9, 9));
+	mainScene.addObject(new Wall, Vector2f(9, 10));
+	mainScene.addObject(new Wall, Vector2f(10, 10));
+	mainScene.addObject(new Wall, Vector2f(11, 10));
+	mainScene.addObject(new Wall, Vector2f(12, 10));
+	mainScene.addObject(new Wall, Vector2f(12, 9));
+	mainScene.addObject(new Wall, Vector2f(13, 9));
+	mainScene.addObject(new Wall, Vector2f(14, 9));
+	mainScene.addObject(new Wall, Vector2f(15, 9));
+	mainScene.addObject(new Wall, Vector2f(16, 9));
+	mainScene.addObject(new Wall, Vector2f(17, 9));
+	mainScene.addObject(new Wall, Vector2f(18, 9));
+	mainScene.addObject(new Wall, Vector2f(18, 8));
+	mainScene.addObject(new Wall, Vector2f(18, 7));
+	mainScene.addObject(new Wall, Vector2f(18, 6));
+	mainScene.addObject(new Wall, Vector2f(19, 6));
+	mainScene.addObject(new Wall, Vector2f(20, 6));
+	mainScene.addObject(new Wall, Vector2f(21, 6));
+	mainScene.addObject(new Wall, Vector2f(21, 5));
+	mainScene.addObject(new Wall, Vector2f(21, 4));
 
-	mainScene.addObject(new Wall, Vector2f(8, 4));
-	mainScene.addObject(new Wall, Vector2f(9, 4));
-	mainScene.addObject(new Wall, Vector2f(10, 4));
-
-	mainScene.addObject(new Wall, Vector2f(3, 7));
-	mainScene.addObject(new Wall, Vector2f(3, 8));
-	mainScene.addObject(new Wall, Vector2f(5, 6));
-	mainScene.addObject(new Wall, Vector2f(6, 6));
-	mainScene.addObject(new Wall, Vector2f(4, 8));
-	mainScene.addObject(new Wall, Vector2f(5, 8));
-	mainScene.addObject(new Wall, Vector2f(6, 8));
-	mainScene.addObject(new Wall, Vector2f(7, 8));
-
-	mainScene.addObject(new Wall, Vector2f(9, 8));
-	mainScene.addObject(new Wall, Vector2f(10, 8));
-
-	mainScene.addObject(new Wall, Vector2f(12, 7));
-	mainScene.addObject(new Wall, Vector2f(12, 8));
 	mainScene.addObject(new Wall, Vector2f(13, 8));
-	mainScene.addObject(new Wall, Vector2f(14, 8));
-	mainScene.addObject(new Wall, Vector2f(15, 8));
 	mainScene.addObject(new Wall, Vector2f(15, 7));
-	mainScene.addObject(new Wall, Vector2f(15, 6));
-	mainScene.addObject(new Wall, Vector2f(16, 6));
+	mainScene.addObject(new Wall, Vector2f(16, 7));
 
 	// Spikes
-	mainScene.addObject(new Spikes("down"), Vector2f(10, 7));
-	mainScene.addObject(new Spikes("down"), Vector2f(5, 5));
-	mainScene.addObject(new Spikes("down"), Vector2f(16, 5));
+	mainScene.addObject(new Spikes("down"), Vector2f(6, 9));
+	mainScene.addObject(new Spikes("down"), Vector2f(10, 9));
+	mainScene.addObject(new Spikes("down"), Vector2f(11, 9));
 
 	player->setField(mainScene.getField());
 
