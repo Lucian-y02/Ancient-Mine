@@ -1,22 +1,22 @@
 #include "Scene.h"
 
+#include <iostream>
+
+using namespace std;
 using namespace sf;
 
 Scene::Scene()
 {
-	window.create(VideoMode::getDesktopMode(), "AncientMine", Style::Fullscreen);
-	window.setFramerateLimit(60);
+	window.create(VideoMode::getDesktopMode(), "Abandoned", Style::Fullscreen);
+	window.setFramerateLimit(fpsLimit);
 	window.setVerticalSyncEnabled(true);
 	window.setMouseCursorVisible(false);
-}
 
-void Scene::draw()
-{
-	window.clear(Color(100, 100, 100));
+	field.resize(fieldWidth);
 
-	for (size_t i = 0; i < field.size(); i++)
+	for (size_t x = 0; x < fieldWidth; x++)
 	{
-		field[i]->draw(window);
+		field[x].resize(fieldHeigth);
 	}
 }
 
@@ -24,30 +24,74 @@ void Scene::update(double delta)
 {
 	this->checkEvents();
 
-	for (size_t i = 0; i < field.size(); i++)
+	for (size_t x = 0; x < fieldWidth; x++)
 	{
-		field[i]->update(delta);
+		for (size_t y = 0; y < fieldHeigth; y++)
+		{
+			if (field[x][y] != NULL)
+				field[x][y]->update(delta);
+		}
+	}
+
+	for (size_t i = 0; i < players.size(); i++)
+	{
+		if (!players[i]->isAlive())
+			players.erase(players.begin() + i);
 	}
 }
 
-void Scene::addObject(BaseObject* newObject)
+void Scene::draw()
 {
-	field.push_back(newObject);
+	window.clear(Color(170, 170, 170));
+
+	for (size_t x = 0; x < fieldWidth; x++)
+	{
+		for (size_t y = 0; y < fieldHeigth; y++)
+		{
+			if (field[x][y] != NULL)
+				field[x][y]->draw(window);
+		}
+	}
+
+	window.display();
 }
 
-void Scene::deleteObject(int index)
+void Scene::addObject(BaseObject* object, Vector2f position)
 {
-	field.erase(field.begin() + index);
+	object->setPosition(position);
+	field[position.x][position.y] = object;
+}
+
+void Scene::addPlayer(Player* player, Vector2f position)
+{
+	this->addObject(player, position);
+	players.push_back(player);
+}
+
+void Scene::deleteObject(Vector2f position)
+{
+	if (field[position.x][position.y] != NULL)
+	{
+		delete field[position.x][position.y];
+		field[position.x][position.y] = NULL;
+	}
 }
 
 void Scene::checkEvents()
 {
-	while (!window.pollEvent(mainEvent))
+	while (window.pollEvent(mainEvent))
 	{
 		if (mainEvent.type == Event::Closed ||
-			(mainEvent.type == Event::KeyPressed && mainEvent.key.code == Keyboard::Key::Delete))
+			(mainEvent.type == Event::KeyPressed && mainEvent.key.code == Keyboard::Delete))
 		{
 			isGameRunning = false;
+		}
+		if (mainEvent.type == Event::KeyReleased && mainEvent.key.code == Keyboard::F1)
+		{
+			for (Player* player : players)
+			{
+				player->showRectangles();
+			}
 		}
 	}
 }
@@ -57,10 +101,18 @@ bool Scene::isPerformed()
 	return isGameRunning;
 }
 
+vector<vector<BaseObject*>>& Scene::getField()
+{
+	return field;
+}
+
 Scene::~Scene()
 {
-	for (size_t i = 0; i < field.size(); i++)
+	for (size_t x = 0; x < fieldWidth; x++)
 	{
-		delete field[i];
+		for (size_t y = 0; y < fieldHeigth; y++)
+		{
+			delete field[x][y];
+		}
 	}
 }

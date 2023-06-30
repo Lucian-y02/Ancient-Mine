@@ -7,29 +7,21 @@ class BaseObject
 {
 protected:
 
-	sf::Vector2f position;
 	std::string name;
-
-public:
-
-	BaseObject(sf::Vector2f position, std::string name = "none");
-
-	virtual void update(double delta) = 0;
-	virtual void draw(sf::RenderWindow& window) = 0;
-	std::string getName();
-};
-
-class VisibleObject : public BaseObject
-{
-protected:
-
-	sf::Sprite sprite;
+	sf::Vector2f position;
 	sf::Texture texture;
+	sf::Sprite sprite;
+	sf::Rect<float> baseRect;
 
 public:
 
-	VisibleObject(sf::Vector2f position, std::string name = "none", 
-		std::string path = "Textures/none.png");
+	BaseObject(sf::Vector2f position, std::string name = "unNamed", 
+		std::string path = "Textures/unNamed.png");
+	BaseObject(std::string name = "unNamed", std::string path = "Textures/unNamed.png");
 
-	void draw(sf::RenderWindow& window) override;
+	virtual void update(double delta);
+	virtual void draw(sf::RenderWindow& window);
+	std::string getName();
+	virtual void setPosition(sf::Vector2f newPosition);
 };
+

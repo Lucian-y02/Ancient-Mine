@@ -16,16 +16,34 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Core\GameStaff">
+      <UniqueIdentifier>{725a3887-c7fe-40f1-ba41-f5ed3e714e37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\GameStaff\Файлы заголовков">
+      <UniqueIdentifier>{95b15ccf-4ea6-4dd9-9ad0-35474ef9835b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\GameStaff\Исходные файлы">
+      <UniqueIdentifier>{e695894c-ffc3-4cef-8795-43b5c00e6c33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AncientMine.cpp">
-      <Filter>Core\Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="BaseObject.cpp">
       <Filter>Core\Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Core\Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Abandoned.cpp">
+      <Filter>Core\Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Core\Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Wall.cpp">
+      <Filter>Core\GameStaff\Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageObjects.cpp">
+      <Filter>Core\GameStaff\Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +52,15 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Core\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Core\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Wall.h">
+      <Filter>Core\GameStaff\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageObjects.h">
+      <Filter>Core\GameStaff\Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

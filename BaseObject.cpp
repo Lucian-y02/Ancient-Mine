@@ -3,36 +3,56 @@
 using namespace std;
 using namespace sf;
 
-#pragma region BaseObject
-
-BaseObject::BaseObject(Vector2f position, string name)
+BaseObject::BaseObject(Vector2f position, string name, string path)
 {
-	this->position = position;
 	this->name = name;
+
+	texture.loadFromFile(path);
+
+	sprite.setTexture(texture);
+	baseRect = sprite.getGlobalBounds();
+
+	sprite.setPosition(Vector2f(position.x * 64.0 + (64.0 - texture.getSize().x) / 2, 
+		position.y * 64.0));
+	position = sprite.getPosition();
+
+	baseRect.left = position.x;
+	baseRect.top = position.y;
 }
+
+BaseObject::BaseObject(string name, string path)
+{
+	this->name = name;
+
+	texture.loadFromFile(path);
+
+	sprite.setTexture(texture);
+	baseRect = sprite.getGlobalBounds();
+
+	sprite.setPosition(Vector2f(-128, 0));
+	position = sprite.getPosition();
+
+	baseRect.left = position.x;
+	baseRect.top = position.y;
+}
+
+void BaseObject::draw(RenderWindow& window)
+{
+	window.draw(sprite);
+}
+
+void BaseObject::update(double delta) {}
 
 string BaseObject::getName()
 {
 	return name;
 }
 
-#pragma endregion
-
-#pragma region VisibleObject
-
-VisibleObject::VisibleObject(Vector2f position, string name, string path) : 
-	BaseObject(position, name)
+void BaseObject::setPosition(Vector2f newPosition)
 {
-	if (!texture.loadFromFile(path))
-		texture.loadFromFile("Textures/none.png");
-
-	sprite.setTexture(texture);
+	position = Vector2f(newPosition.x * 64.0, newPosition.y * 64.0);
 	sprite.setPosition(position);
-}
 
-void VisibleObject::draw(RenderWindow& window)
-{
-	window.draw(sprite);
+	baseRect.left = position.x;
+	baseRect.top = position.y;
 }
-
-#pragma endregion
