@@ -79,11 +79,21 @@ Player::Player(Vector2f position, vector<vector<BaseObject*>>& field, string con
 void Player::update(double delta)
 {
 	// Обновление таймеров
+	// Эффект бессмертия при получении урона
 	if (immortal)
 	{
 		immortalTimer += delta;
+
+		// Мигание при бессмертии
+		visibleCounter++;
+		if (visibleCounter % 3 == 0)
+			visible = !visible;
+
 		if (immortalTimer >= immortalCoolDown)
+		{
 			immortal = false;
+			visible = true;
+		}		
 	}
 
 	velocity = Vector2f(0, 0);
@@ -143,7 +153,8 @@ void Player::update(double delta)
 
 void Player::draw(RenderWindow& window)
 {
-	window.draw(sprite);
+	if (visible)
+		window.draw(sprite);
 
 	if (rectanglesVisible)
 	{
@@ -318,6 +329,7 @@ void Player::takeDamage(int damage)
 
 	immortal = true;
 	immortalTimer = 0;
+	visibleCounter = 0;
 }
 
 void Player::healing(int healthValue)

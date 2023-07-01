@@ -48,6 +48,8 @@ private:
 	float immortalTimer = 0.0;
 	float immortalCoolDown = 2.0;
 	bool immortal = false;
+	bool visible = true;
+	int visibleCounter = 0;
 	int health = 7;
 	HealthBar healthBar;
 	

@@ -18,9 +18,10 @@ protected:
 
 public:
 
-	BaseObject(sf::Vector2f position, std::string name = "unNamed", 
-		std::string path = "Textures/unNamed.png");
-	BaseObject(std::string name = "unNamed", std::string path = "Textures/unNamed.png");
+	BaseObject(sf::Vector2f position, std::string name = "unNamed",
+		std::string path = "Textures/unNamed.png", bool loadTexture = true);
+	BaseObject(std::string name = "unNamed", std::string path = "Textures/unNamed.png",
+		bool loadTexture = true);
 
 	virtual void update(double delta);
 	virtual void draw(sf::RenderWindow& window);
