@@ -45,6 +45,12 @@
     <ClCompile Include="DamageObjects.cpp">
       <Filter>Core\GameStaff\Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Cannons.cpp">
+      <Filter>Core\GameStaff\Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Marker.cpp">
+      <Filter>Core\GameStaff\Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseObject.h">
@@ -60,6 +66,12 @@
       <Filter>Core\GameStaff\Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="DamageObjects.h">
+      <Filter>Core\GameStaff\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Cannons.h">
+      <Filter>Core\GameStaff\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Marker.h">
       <Filter>Core\GameStaff\Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

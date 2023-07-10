@@ -60,6 +60,8 @@ void BaseObject::draw(RenderWindow& window)
 
 void BaseObject::update(double delta) {}
 
+void BaseObject::startProcess() {}
+
 string BaseObject::getName()
 {
 	return name;
@@ -76,7 +78,7 @@ void BaseObject::setPosition(Vector2f newPosition)
 	showRect.setPosition(position);
 }
 
-int BaseObject::getDamage()
+double BaseObject::getValue()
 {
 	return damage;
 }
@@ -89,4 +91,9 @@ void BaseObject::showRectangles()
 Rect<float>& BaseObject::getRect()
 {
 	return baseRect;
+}
+
+bool BaseObject::isDestroyed()
+{
+	return destroyed;
 }

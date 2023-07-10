@@ -19,6 +19,7 @@ private:
 	int fieldHeigth = 20;
 	bool isGameRunning = true;
 	bool isFullScreen = true;
+	bool gridDraw = false;
 
 public:
 
@@ -32,6 +33,7 @@ public:
 	void checkEvents();
 	bool isPerformed();
 	std::vector<std::vector<BaseObject*>>& getField();
+	std::vector<Player*>& getPlaeyrs();
 
 	~Scene();
 };

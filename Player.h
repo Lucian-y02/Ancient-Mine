@@ -25,12 +25,12 @@ public:
 class Player: public BaseObject
 {
 private:
-	
+
 	// Прямоугольники
 	sf::RectangleShape showAdditionalRect;
 	sf::Rect<float> additionalRect;
 	float shiftWidth = 7; // Смещение дополнительного прямоугольника по оси OY
-	float shiftHeight = 5; // Смещение дополнительного прямоугольника по оси OX
+	float shiftHeight = 6; // Смещение дополнительного прямоугольника по оси OX
 
 	std::vector<std::vector<BaseObject*>> field;
 
@@ -44,13 +44,14 @@ private:
 	double n = 1;
 	bool onGround = true;
 	bool jumpReady = true;
+	bool jumpBoost = false;
 	
 	float immortalTimer = 0.0;
 	float immortalCoolDown = 2.0;
 	bool immortal = false;
 	bool visible = true;
 	int visibleCounter = 0;
-	int health = 7;
+	int health = 5;
 	HealthBar healthBar;
 	
 public:
@@ -70,4 +71,5 @@ public:
 	void checkCollision(char axis);
 	void takeDamage(int damage);
 	void healing(int healthValue);
+	sf::Rect<float> getAdditionalRect();
 };

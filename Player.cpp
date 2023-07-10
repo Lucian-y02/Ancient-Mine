@@ -115,30 +115,43 @@ void Player::update(double delta)
 	this->checkCollision('x'); // Проверка столкновений по оси OX
 	velocity = Vector2f(0, 0);
 
+	if (jumpBoost)
+	{
+		//cout << jumpForceNow.y << "\tonGround: " << onGround << endl;
+	}
+
 	// Обработка прыжка
 	if (!onGround)
 	{
 		velocity += jumpForceNow;
 
 		// Изменение гравитации после отпускания клавиши
-		if (jumpForceNow.y < 0)
+		if (jumpForceNow.y < 0 && !jumpBoost)
 		{
 			jumpForceNow.y *= n;
+		}
+		else if (jumpForceNow.y >= 0)
+		{
+			jumpBoost = false;
 		}
 
 		// Влияние гравитации
 		jumpForceNow += gravity;
 	}
 
-	if (velocity.y == 0)
+	if (velocity.y == 0.0)
 	{
 		onGround = false;
 		jumpForceNow = gravity;
+		velocity += jumpForceNow;
 	}
 
 	velocity.y *= delta;
 	position += velocity;
 	this->checkCollision('y'); // Проверка столкновений по оси OY
+
+	// Переменещние на движущейся платформе
+	position.x += velocity.x * delta;
 
 	sprite.setPosition(position);
 
@@ -184,48 +197,110 @@ void Player::checkCollision(char axis)
 {
 	string objectName;
 
-	for (int x = (int)(position.x) / 64; x <= ((int)(position.x) + texture.getSize().x) / 64; x++)
+	// Предварительное изменение позиции для проверки столкновений
+	if (axis == 'x')
+		baseRect.left = position.x;
+	else if (axis == 'y')
+		baseRect.top = position.y;
+
+	for (int x = (int)(position.x) / 64; x <= ((int)(position.x) + baseRect.width) / 64; x++)
 	{
-		for (int y = (int)(position.y) / 64; y <= ((int)(position.y) + texture.getSize().y) / 64; y++)
+		for (int y = (int)baseRect.top / 64; y <= ((int)baseRect.top + baseRect.height) / 64; y++)
 		{
-			if (field[x][y] != NULL)
+			if (field[x][y] != NULL && !field[x][y]->isDestroyed())
 			{
 				objectName = field[x][y]->getName();
 
-				if (objectName == "wall")
+				if (baseRect.intersects(field[x][y]->getRect()) && 
+					(objectName == "wall" || objectName == "selfDestructiveBlock" ||
+					objectName == "cannon" || objectName == "jumpBoost" || objectName == "moveWall"))
 				{
 					if (axis == 'x')
 					{
 						if (velocity.x > 0)
 						{
-							position.x = x * 64 - texture.getSize().x - 0.1;
+							position.x = field[x][y]->getRect().left - texture.getSize().x - 0.1;
 						}
 						else if (velocity.x < 0)
 						{
-							position.x = (x + 1) * 64 + 0.1;
+							position.x = field[x][y]->getRect().left + field[x][y]->getRect().width + 0.1;
 						}
 					}
 					else if (axis == 'y')
 					{
 						if (velocity.y > 0)
 						{
-							position.y = y * 64 - texture.getSize().y - 0.1;
-							onGround = true;
-							n = 1;
-							jumpForceNow = jumpForce;
+							position.y = field[x][y]->getRect().top - texture.getSize().y - 0.1;
+							if (!jumpBoost)
+							{
+								onGround = true;
+								n = 1;
+								jumpForceNow = jumpForce;
+							}
+
+							if (objectName == "selfDestructiveBlock")
+							{
+								field[x][y]->startProcess();
+							}
+							else if (objectName == "jumpBoost")
+							{
+								onGround = false;
+								jumpReady = false;
+								jumpBoost = true;
+
+								jumpForceNow = jumpForce - Vector2f(0, field[x][y]->getValue());
+							}
+							else if (objectName == "moveWall")
+							{
+								velocity.x += field[x][y]->getValue();
+							}
 						}
 						else if (velocity.y < 0)
 						{
 							jumpForceNow.y = 0;
-							position.y = (y + 1) * 64 + 0.1;
+							position.y = field[x][y]->getRect().top + field[x][y]->getRect().height + 0.1;
 						}
 					}
 				}
-				else if (additionalRect.intersects(field[x][y]->getRect()))
+
+				if (objectName == "platform")
 				{
-					if (objectName == "spikes" && !immortal)
+					if (axis == 'y')
 					{
-						this->takeDamage(field[x][y]->getDamage());
+						if (velocity.y > 0 && position.y + baseRect.height <= y * 64 + 
+							(int)field[x][y]->getRect().height
+							&& !(((controlType == "joystickX" || controlType == "joystickD") && 
+								(Joystick::getAxisPosition(0, Joystick::Y) == 100 || 
+								 Joystick::getAxisPosition(0, Joystick::PovY) == -100)) || 
+								(controlType == "keyboard" && Keyboard::isKeyPressed(Keyboard::S))))
+						{
+							position.y = field[x][y]->getRect().top - texture.getSize().y - 0.1;
+							if (!jumpBoost)
+							{
+								onGround = true;
+								n = 1;
+								jumpForceNow = jumpForce;
+							}
+						}
+					}
+				}
+
+				if (additionalRect.intersects(field[x][y]->getRect()))
+				{
+					if (objectName == "spikes" && field[x][y] > 0)
+					{
+						this->takeDamage((int)field[x][y]->getValue());
+					}
+					else if (objectName == "killZone")
+					{
+						health = 0;
+					}
+					else if (objectName == "spikesTrap")
+					{
+						field[x][y]->startProcess();
+
+						if ((int)field[x][y]->getValue() > 0)
+							this->takeDamage(field[x][y]->getValue());
 					}
 				}
 			}
@@ -324,12 +399,15 @@ void Player::setField(std::vector<std::vector<BaseObject*>>& field)
 
 void Player::takeDamage(int damage)
 {
-	health -= damage;
-	healthBar.update(health);
+	if (!immortal)
+	{
+		health -= damage;
+		healthBar.update(health);
 
-	immortal = true;
-	immortalTimer = 0;
-	visibleCounter = 0;
+		immortal = true;
+		immortalTimer = 0;
+		visibleCounter = 0;
+	}
 }
 
 void Player::healing(int healthValue)
@@ -337,4 +415,9 @@ void Player::healing(int healthValue)
 	health += healthValue;
 
 	healthBar.update(health);
+}
+
+Rect<float> Player::getAdditionalRect()
+{
+	return additionalRect;
 }

@@ -14,6 +14,7 @@ protected:
 	sf::RectangleShape showRect;
 	sf::Rect<float> baseRect;
 	bool rectanglesVisible = false;
+	bool destroyed = false;
 	int damage = 0;
 
 public:
@@ -25,10 +26,12 @@ public:
 
 	virtual void update(double delta);
 	virtual void draw(sf::RenderWindow& window);
+	virtual void startProcess();
 	std::string getName();
 	virtual void setPosition(sf::Vector2f newPosition);
-	int getDamage();
+	virtual double getValue();
 	void showRectangles();
 	sf::Rect<float>& getRect();
+	bool isDestroyed();
 };
 

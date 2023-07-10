@@ -2,6 +2,7 @@
 #include "Wall.h"
 #include "DamageObjects.h"
 #include "BaseObject.h"
+#include "Cannons.h"
 #include "Player.h"
 #include "SFML/Graphics.hpp"
 #include <iostream>
@@ -16,49 +17,25 @@ int main()
 
 	// Player
 	Player* player = new Player(mainScene.getField(), "joystickX");
-	mainScene.addPlayer(player, Vector2f(4, 8));
+	mainScene.addPlayer(player, Vector2f(3, 2));
 
-	// Walls
-	mainScene.addObject(new Wall, Vector2f(2, 7));
-	mainScene.addObject(new Wall, Vector2f(2, 8));
-	mainScene.addObject(new Wall, Vector2f(2, 9));
-	mainScene.addObject(new Wall, Vector2f(3, 9));
+	// Another objects
+	mainScene.addObject(new Platform, Vector2f(3, 3));
 	mainScene.addObject(new Wall, Vector2f(4, 9));
 	mainScene.addObject(new Wall, Vector2f(5, 9));
-	mainScene.addObject(new Wall, Vector2f(5, 10));
-	mainScene.addObject(new Wall, Vector2f(6, 10));
-	mainScene.addObject(new Wall, Vector2f(7, 10));
-	mainScene.addObject(new Wall, Vector2f(7, 9));
-	mainScene.addObject(new Wall, Vector2f(8, 9));
-	mainScene.addObject(new Wall, Vector2f(9, 9));
-	mainScene.addObject(new Wall, Vector2f(9, 10));
-	mainScene.addObject(new Wall, Vector2f(10, 10));
-	mainScene.addObject(new Wall, Vector2f(11, 10));
-	mainScene.addObject(new Wall, Vector2f(12, 10));
-	mainScene.addObject(new Wall, Vector2f(12, 9));
-	mainScene.addObject(new Wall, Vector2f(13, 9));
-	mainScene.addObject(new Wall, Vector2f(14, 9));
-	mainScene.addObject(new Wall, Vector2f(15, 9));
-	mainScene.addObject(new Wall, Vector2f(16, 9));
-	mainScene.addObject(new Wall, Vector2f(17, 9));
-	mainScene.addObject(new Wall, Vector2f(18, 9));
-	mainScene.addObject(new Wall, Vector2f(18, 8));
-	mainScene.addObject(new Wall, Vector2f(18, 7));
-	mainScene.addObject(new Wall, Vector2f(18, 6));
-	mainScene.addObject(new Wall, Vector2f(19, 6));
-	mainScene.addObject(new Wall, Vector2f(20, 6));
-	mainScene.addObject(new Wall, Vector2f(21, 6));
-	mainScene.addObject(new Wall, Vector2f(21, 5));
-	mainScene.addObject(new Wall, Vector2f(21, 4));
-
-	mainScene.addObject(new Wall, Vector2f(13, 8));
-	mainScene.addObject(new Wall, Vector2f(15, 7));
-	mainScene.addObject(new Wall, Vector2f(16, 7));
-
-	// Spikes
-	mainScene.addObject(new Spikes("down"), Vector2f(6, 9));
-	mainScene.addObject(new Spikes("down"), Vector2f(10, 9));
-	mainScene.addObject(new Spikes("down"), Vector2f(11, 9));
+	mainScene.addObject(new Wall, Vector2f(6, 9));
+	mainScene.addObject(new JumpBoost, Vector2f(2, 11));
+	mainScene.addObject(new Platform, Vector2f(3, 11));
+	mainScene.addObject(new Platform, Vector2f(4, 11));
+	mainScene.addObject(new Platform, Vector2f(5, 11));
+	mainScene.addObject(new Platform, Vector2f(6, 11));
+	mainScene.addObject(new Platform, Vector2f(7, 11));
+	mainScene.addObject(new Platform, Vector2f(8, 11));
+	
+	MoveWall* moveWall = new MoveWall("right");
+	mainScene.addObject(moveWall, Vector2f(7, 9));
+	moveWall->addMarker(Vector2f(7, 9), "left", "right");
+	moveWall->addMarker(Vector2f(8, 9), "right", "left");
 
 	player->setField(mainScene.getField());
 

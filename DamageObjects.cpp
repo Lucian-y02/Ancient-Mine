@@ -49,3 +49,64 @@ void Spikes::setPosition(Vector2f newPosition)
 }
 
 #pragma endregion
+
+#pragma region SpikesTrap
+
+SpikesTrap::SpikesTrap(string side) : Spikes(side)
+{
+	damage = 0.0;
+	name = "spikesTrap";
+}
+
+void SpikesTrap::update(double delta)
+{
+	if (start)
+		openTimer += delta;
+	else if (isOpen)
+		openTimer += delta;
+
+	if (openTimer >= openCoolDown && start)
+	{
+		isOpen = true;
+		start = false;
+		damage = damageOnOpening;
+		openTimer = 0.0;
+	}
+	else if (openTimer >= openCoolDown + 0.75 && isOpen)
+	{
+		isOpen = false;
+		damage = 0.0;
+		openTimer = 0.0;
+	}
+}
+
+void SpikesTrap::draw(RenderWindow& window)
+{
+	if (isOpen)
+		window.draw(sprite);
+
+	if (rectanglesVisible)
+		window.draw(showRect);
+}
+
+void SpikesTrap::startProcess()
+{
+	start = true;
+}
+
+#pragma endregion
+
+#pragma region KillZone
+
+KillZone::KillZone() : BaseObject("killZone")
+{
+	showRect.setFillColor(Color(200, 0, 0, 100));
+}
+
+void KillZone::draw(RenderWindow& window)
+{
+	if (rectanglesVisible)
+		window.draw(showRect);
+}
+
+#pragma endregion

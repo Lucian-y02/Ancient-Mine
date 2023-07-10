@@ -27,7 +27,13 @@ void Scene::update(double delta)
 	for (size_t i = 0; i < players.size(); i++)
 	{
 		if (!players[i]->isAlive())
+		{
 			isGameRunning = false;
+		}
+		else
+		{
+			players[i]->update(delta);
+		}
 	}
 
 	for (size_t x = 0; x < fieldWidth; x++)
@@ -35,7 +41,15 @@ void Scene::update(double delta)
 		for (size_t y = 0; y < fieldHeigth; y++)
 		{
 			if (field[x][y] != NULL)
-	field[x][y]->update(delta);
+			{
+				if (field[x][y]->isDestroyed())
+				{
+					delete field[x][y];
+					field[x][y] = NULL;
+				}
+				else
+					field[x][y]->update(delta);
+			}
 		}
 	}
 }
@@ -53,6 +67,31 @@ void Scene::draw()
 		}
 	}
 
+	for (Player* player : players)
+	{
+		player->draw(window);
+	}
+
+	// Отрисовка сетки
+	if (gridDraw)
+	{
+		RectangleShape grid;
+		grid.setFillColor(Color(75, 75, 75, 150));
+		grid.setSize(Vector2f(window.getSize().x, 1));
+		for (size_t i = 0; i < fieldHeigth; i++)
+		{
+			grid.setPosition(Vector2f(0, 64.0 * i));
+			window.draw(grid);
+		}
+		grid.setSize(Vector2f(1, window.getSize().y));
+		for (size_t i = 0; i < fieldWidth; i++)
+		{
+			grid.setPosition(Vector2f(64.0 * i, 0));
+			window.draw(grid);
+		}
+
+	}
+
 	window.display();
 }
 
@@ -64,7 +103,7 @@ void Scene::addObject(BaseObject* object, Vector2f position)
 
 void Scene::addPlayer(Player* player, Vector2f position)
 {
-	this->addObject(player, position);
+	player->setPosition(position);
 	players.push_back(player);
 }
 
@@ -81,20 +120,35 @@ void Scene::checkEvents()
 {
 	while (window.pollEvent(mainEvent))
 	{
-		if (mainEvent.type == Event::Closed ||
-			(mainEvent.type == Event::KeyPressed && mainEvent.key.code == Keyboard::Delete))
+		if (mainEvent.type == Event::Closed)
 		{
 			isGameRunning = false;
 		}
-		if (mainEvent.type == Event::KeyReleased && mainEvent.key.code == Keyboard::F1)
+		if (mainEvent.type == Event::KeyReleased)
 		{
-			for (size_t x = 0; x < fieldWidth; x++)
+			if (mainEvent.key.code == Keyboard::F1)
 			{
-				for (size_t y = 0; y < fieldHeigth; y++)
+				for (size_t x = 0; x < fieldWidth; x++)
 				{
-					if (field[x][y] != NULL)
-						field[x][y]->showRectangles();
+					for (size_t y = 0; y < fieldHeigth; y++)
+					{
+						if (field[x][y] != NULL)
+							field[x][y]->showRectangles();
+					}
 				}
+
+				for (Player* player : players)
+				{
+					player->showRectangles();
+				}
+			}
+
+			if (mainEvent.key.code == Keyboard::Delete)
+				isGameRunning = false;
+
+			if (mainEvent.key.code == Keyboard::F2)
+			{
+				gridDraw = !gridDraw;
 			}
 		}
 	}
@@ -108,6 +162,11 @@ bool Scene::isPerformed()
 vector<vector<BaseObject*>>& Scene::getField()
 {
 	return field;
+}
+
+vector<Player*>& Scene::getPlaeyrs()
+{
+	return players;
 }
 
 Scene::~Scene()
