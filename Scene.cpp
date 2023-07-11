@@ -24,18 +24,16 @@ void Scene::update(double delta)
 {
 	this->checkEvents();
 
+	// Обновление гроков
 	for (size_t i = 0; i < players.size(); i++)
 	{
 		if (!players[i]->isAlive())
-		{
 			isGameRunning = false;
-		}
 		else
-		{
 			players[i]->update(delta);
-		}
 	}
 
+	// Обновление основных объектов
 	for (size_t x = 0; x < fieldWidth; x++)
 	{
 		for (size_t y = 0; y < fieldHeigth; y++)
@@ -52,12 +50,19 @@ void Scene::update(double delta)
 			}
 		}
 	}
+
+	// Обновление движущихся объектов
+	for (MoveObject* moveObject : moveObjects)
+	{
+		moveObject->update(delta);
+	}
 }
 
 void Scene::draw()
 {
 	window.clear(Color(170, 170, 170));
 
+	// Отрисовка основных объектов
 	for (size_t x = 0; x < fieldWidth; x++)
 	{
 		for (size_t y = 0; y < fieldHeigth; y++)
@@ -67,9 +72,16 @@ void Scene::draw()
 		}
 	}
 
+	// Отрисовка игроков
 	for (Player* player : players)
 	{
 		player->draw(window);
+	}
+
+	// Отрисовка движущихся объектов
+	for (MoveObject* moveObject : moveObjects)
+	{
+		moveObject->draw(window);
 	}
 
 	// Отрисовка сетки
@@ -107,6 +119,12 @@ void Scene::addPlayer(Player* player, Vector2f position)
 	players.push_back(player);
 }
 
+void Scene::addMoveObject(MoveObject* object, Vector2f position)
+{
+	object->setPosition(position);
+	moveObjects.push_back(object);
+}
+
 void Scene::deleteObject(Vector2f position)
 {
 	if (field[position.x][position.y] != NULL)
@@ -141,6 +159,11 @@ void Scene::checkEvents()
 				{
 					player->showRectangles();
 				}
+
+				for (MoveObject* moveObject : moveObjects)
+				{
+					moveObject->showRectangles();
+				}
 			}
 
 			if (mainEvent.key.code == Keyboard::Delete)
@@ -167,6 +190,11 @@ vector<vector<BaseObject*>>& Scene::getField()
 vector<Player*>& Scene::getPlaeyrs()
 {
 	return players;
+}
+
+vector<MoveObject*>& Scene::getMoveObjects()
+{
+	return moveObjects;
 }
 
 Scene::~Scene()

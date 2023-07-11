@@ -66,13 +66,6 @@ protected:
 	double speed = 150;
 	sf::Vector2f velocity;
 
-	// Дополнительный прямоугольник для определения координат
-	sf::Rect<float> additionalRect;
-	sf::RectangleShape showAdditionalRect;
-
-	// Поле объектов
-	std::vector<std::vector<BaseObject*>> field;
-
 public:
 
 	static std::map<std::string, sf::Vector2f> moveSideMap;
@@ -84,7 +77,6 @@ public:
 	void update(double delta) override;
 	void setPosition(sf::Vector2f newPosition) override;
 	void addMarker(sf::Vector2f position, std::string side, std::string moveSide);
-	void updateField();
 	double getValue() override;
 	bool checkMarkers();
 

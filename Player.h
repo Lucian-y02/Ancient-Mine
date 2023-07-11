@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BaseObject.h"
+#include "Wall.h"
 #include "SFML/Graphics.hpp"
 #include <map>
 #include <string>
@@ -26,6 +27,11 @@ class Player: public BaseObject
 {
 private:
 
+	// Вспомогательные переменные
+	std::string objectName;
+	std::vector<int> sidePressure = { 0, 0, 0, 0 }; // { слева, справа, снизу, сверху }
+	sf::RectangleShape showPressure;
+
 	// Прямоугольники
 	sf::RectangleShape showAdditionalRect;
 	sf::Rect<float> additionalRect;
@@ -33,6 +39,7 @@ private:
 	float shiftHeight = 6; // Смещение дополнительного прямоугольника по оси OX
 
 	std::vector<std::vector<BaseObject*>> field;
+	std::vector<MoveObject*> moveObjects;
 
 	std::string controlType = "keyboard";
 
@@ -56,14 +63,17 @@ private:
 	
 public:
 
-	Player(std::vector<std::vector<BaseObject*>>& field, std::string controlType = "keyboard");
+	Player(std::vector<std::vector<BaseObject*>>& field, 
+		std::vector<MoveObject*>& moveObjects,
+		std::string controlType = "keyboard");
 	Player(sf::Vector2f position, std::vector<std::vector<BaseObject*>>& field,
 		std::string controlType = "keyboard");
 
 	void update(double delta) override;
 	void draw(sf::RenderWindow& window) override;
 	void setPosition(sf::Vector2f newPosition) override;
-	void setField(std::vector<std::vector<BaseObject*>>& field);
+	void setData(std::vector<std::vector<BaseObject*>>& field, 
+		std::vector<MoveObject*>& moveObjects);
 	void checkPressedKeyboard();
 	void checkPressedJoystickX();
 	void checkPressedJoystickD();
@@ -71,5 +81,6 @@ public:
 	void checkCollision(char axis);
 	void takeDamage(int damage);
 	void healing(int healthValue);
+	void checkObject(BaseObject* object, char axis);
 	sf::Rect<float> getAdditionalRect();
 };

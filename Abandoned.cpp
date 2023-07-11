@@ -16,28 +16,40 @@ int main()
 	Scene mainScene;
 
 	// Player
-	Player* player = new Player(mainScene.getField(), "joystickX");
-	mainScene.addPlayer(player, Vector2f(3, 2));
+	Player* player = new Player(mainScene.getField(), mainScene.getMoveObjects(), "joystickX");
+	mainScene.addPlayer(player, Vector2f(5, 8));
 
 	// Another objects
-	mainScene.addObject(new Platform, Vector2f(3, 3));
+	mainScene.addObject(new Wall, Vector2f(2, 7));
+	mainScene.addObject(new Wall, Vector2f(2, 8));
+	mainScene.addObject(new Wall, Vector2f(2, 9));
+	mainScene.addObject(new Wall, Vector2f(3, 9));
 	mainScene.addObject(new Wall, Vector2f(4, 9));
+	mainScene.addObject(new Wall, Vector2f(4, 7));
 	mainScene.addObject(new Wall, Vector2f(5, 9));
 	mainScene.addObject(new Wall, Vector2f(6, 9));
-	mainScene.addObject(new JumpBoost, Vector2f(2, 11));
-	mainScene.addObject(new Platform, Vector2f(3, 11));
-	mainScene.addObject(new Platform, Vector2f(4, 11));
-	mainScene.addObject(new Platform, Vector2f(5, 11));
-	mainScene.addObject(new Platform, Vector2f(6, 11));
-	mainScene.addObject(new Platform, Vector2f(7, 11));
-	mainScene.addObject(new Platform, Vector2f(8, 11));
+	mainScene.addObject(new Wall, Vector2f(7, 9));
+	mainScene.addObject(new Wall, Vector2f(8, 9));
+	mainScene.addObject(new Wall, Vector2f(9, 9));
+	mainScene.addObject(new Wall, Vector2f(10, 9));
+	mainScene.addObject(new Wall, Vector2f(11, 9));
+	mainScene.addObject(new Wall, Vector2f(12, 9));
+	mainScene.addObject(new Wall, Vector2f(13, 9));
+	mainScene.addObject(new Wall, Vector2f(13, 8));
+	mainScene.addObject(new Wall, Vector2f(14, 9));
+	mainScene.addObject(new Wall, Vector2f(15, 9));
 	
 	MoveWall* moveWall = new MoveWall("right");
-	mainScene.addObject(moveWall, Vector2f(7, 9));
-	moveWall->addMarker(Vector2f(7, 9), "left", "right");
-	moveWall->addMarker(Vector2f(8, 9), "right", "left");
+	mainScene.addMoveObject(moveWall, Vector2f(7, 8));
+	moveWall->addMarker(Vector2f(7, 8), "left", "right");
+	moveWall->addMarker(Vector2f(10, 8), "right", "left");
 
-	player->setField(mainScene.getField());
+	moveWall = new MoveWall("left");
+	mainScene.addMoveObject(moveWall, Vector2f(8, 7));
+	moveWall->addMarker(Vector2f(6, 7), "left", "right");
+	moveWall->addMarker(Vector2f(11, 7), "right", "left");
+
+	player->setData(mainScene.getField(), mainScene.getMoveObjects());
 
 	Clock mainClock;
 	double delta;

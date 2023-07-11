@@ -30,11 +30,14 @@ void HealthBar::draw(RenderWindow& window)
 
 #pragma endregion
 
-Player::Player(vector<vector<BaseObject*>>& field, string controlType) :
+Player::Player(vector<vector<BaseObject*>>& field, 
+	vector<MoveObject*>& moveObjects,
+	string controlType) :
 	BaseObject("player", "Textures/player.png") 
 {
 	this->controlType = controlType;
 	this->field = field;
+	this->moveObjects = moveObjects;
 
 	healthBar.update(health);
 
@@ -49,6 +52,10 @@ Player::Player(vector<vector<BaseObject*>>& field, string controlType) :
 	// Отображение для дополнительного прямоугольника
 	showAdditionalRect.setSize(Vector2f(additionalRect.width, additionalRect.height));
 	showAdditionalRect.setFillColor(Color(50, 50, 150));
+
+	// Отображение давлений
+	showPressure.setSize(Vector2f(20, 20));
+	showPressure.setFillColor(Color(50, 200, 50));
 }
 
 Player::Player(Vector2f position, vector<vector<BaseObject*>>& field, string controlType) :
@@ -74,6 +81,10 @@ Player::Player(Vector2f position, vector<vector<BaseObject*>>& field, string con
 	showAdditionalRect.setSize(Vector2f(additionalRect.width, additionalRect.height));
 	showAdditionalRect.setPosition(Vector2f(additionalRect.left, additionalRect.top));
 	showAdditionalRect.setFillColor(Color(50, 50, 150));
+
+	// Отображение давлений
+	showPressure.setSize(Vector2f(20, 20));
+	showPressure.setFillColor(Color(50, 200, 50));
 }
 
 void Player::update(double delta)
@@ -96,7 +107,9 @@ void Player::update(double delta)
 		}		
 	}
 
+	// Обнуление переменных
 	velocity = Vector2f(0, 0);
+	sidePressure = { 0, 0, 0, 0 };
 	
 	// Проверка на нажатия кнопок
 	if (controlType == "keyboard")
@@ -113,12 +126,8 @@ void Player::update(double delta)
 	velocity.x *= speed * delta;
 	position += velocity;
 	this->checkCollision('x'); // Проверка столкновений по оси OX
+	this->checkCollision('x'); // Проверка столкновений по оси OX
 	velocity = Vector2f(0, 0);
-
-	if (jumpBoost)
-	{
-		//cout << jumpForceNow.y << "\tonGround: " << onGround << endl;
-	}
 
 	// Обработка прыжка
 	if (!onGround)
@@ -150,7 +159,6 @@ void Player::update(double delta)
 	position += velocity;
 	this->checkCollision('y'); // Проверка столкновений по оси OY
 
-	// Переменещние на движущейся платформе
 	position.x += velocity.x * delta;
 
 	sprite.setPosition(position);
@@ -162,6 +170,13 @@ void Player::update(double delta)
 	additionalRect.top = position.y + shiftHeight;
 	showRect.setPosition(position);
 	showAdditionalRect.setPosition(Vector2f(additionalRect.left, additionalRect.top));
+
+	// Проверка давления
+	if ((sidePressure[0] > 0 && sidePressure[1] > 0) ||
+		(sidePressure[2] > 0 && sidePressure[3] > 0))
+	{
+		health = 0;
+	}
 }
 
 void Player::draw(RenderWindow& window)
@@ -173,6 +188,27 @@ void Player::draw(RenderWindow& window)
 	{
 		window.draw(showRect);
 		window.draw(showAdditionalRect);
+
+		if (sidePressure[0] > 0)
+		{
+			showPressure.setPosition(Vector2f(position.x - 10, position.y + 22));
+			window.draw(showPressure);
+		}
+		if (sidePressure[1] > 0)
+		{
+			showPressure.setPosition(Vector2f(position.x + baseRect.width - 10, position.y + 22));
+			window.draw(showPressure);
+		}
+		if (sidePressure[2] > 0)
+		{
+			showPressure.setPosition(Vector2f(position.x + 14, position.y + baseRect.height - 10));
+			window.draw(showPressure);
+		}
+		if (sidePressure[3] > 0)
+		{
+			showPressure.setPosition(Vector2f(position.x + 14, position.y - 10));
+			window.draw(showPressure);
+		}
 	}
 
 	healthBar.draw(window);
@@ -195,115 +231,20 @@ void Player::setPosition(Vector2f newPosition)
 
 void Player::checkCollision(char axis)
 {
-	string objectName;
-
 	// Предварительное изменение позиции для проверки столкновений
-	if (axis == 'x')
-		baseRect.left = position.x;
-	else if (axis == 'y')
-		baseRect.top = position.y;
+	baseRect.left = position.x;
+	baseRect.top = position.y;
+	 
+	for (MoveObject* moveObject : moveObjects)
+	{
+		this->checkObject(moveObject, axis);
+	}
 
 	for (int x = (int)(position.x) / 64; x <= ((int)(position.x) + baseRect.width) / 64; x++)
 	{
 		for (int y = (int)baseRect.top / 64; y <= ((int)baseRect.top + baseRect.height) / 64; y++)
 		{
-			if (field[x][y] != NULL && !field[x][y]->isDestroyed())
-			{
-				objectName = field[x][y]->getName();
-
-				if (baseRect.intersects(field[x][y]->getRect()) && 
-					(objectName == "wall" || objectName == "selfDestructiveBlock" ||
-					objectName == "cannon" || objectName == "jumpBoost" || objectName == "moveWall"))
-				{
-					if (axis == 'x')
-					{
-						if (velocity.x > 0)
-						{
-							position.x = field[x][y]->getRect().left - texture.getSize().x - 0.1;
-						}
-						else if (velocity.x < 0)
-						{
-							position.x = field[x][y]->getRect().left + field[x][y]->getRect().width + 0.1;
-						}
-					}
-					else if (axis == 'y')
-					{
-						if (velocity.y > 0)
-						{
-							position.y = field[x][y]->getRect().top - texture.getSize().y - 0.1;
-							if (!jumpBoost)
-							{
-								onGround = true;
-								n = 1;
-								jumpForceNow = jumpForce;
-							}
-
-							if (objectName == "selfDestructiveBlock")
-							{
-								field[x][y]->startProcess();
-							}
-							else if (objectName == "jumpBoost")
-							{
-								onGround = false;
-								jumpReady = false;
-								jumpBoost = true;
-
-								jumpForceNow = jumpForce - Vector2f(0, field[x][y]->getValue());
-							}
-							else if (objectName == "moveWall")
-							{
-								velocity.x += field[x][y]->getValue();
-							}
-						}
-						else if (velocity.y < 0)
-						{
-							jumpForceNow.y = 0;
-							position.y = field[x][y]->getRect().top + field[x][y]->getRect().height + 0.1;
-						}
-					}
-				}
-
-				if (objectName == "platform")
-				{
-					if (axis == 'y')
-					{
-						if (velocity.y > 0 && position.y + baseRect.height <= y * 64 + 
-							(int)field[x][y]->getRect().height
-							&& !(((controlType == "joystickX" || controlType == "joystickD") && 
-								(Joystick::getAxisPosition(0, Joystick::Y) == 100 || 
-								 Joystick::getAxisPosition(0, Joystick::PovY) == -100)) || 
-								(controlType == "keyboard" && Keyboard::isKeyPressed(Keyboard::S))))
-						{
-							position.y = field[x][y]->getRect().top - texture.getSize().y - 0.1;
-							if (!jumpBoost)
-							{
-								onGround = true;
-								n = 1;
-								jumpForceNow = jumpForce;
-							}
-						}
-					}
-				}
-
-				if (additionalRect.intersects(field[x][y]->getRect()))
-				{
-					if (objectName == "spikes" && field[x][y] > 0)
-					{
-						this->takeDamage((int)field[x][y]->getValue());
-					}
-					else if (objectName == "killZone")
-					{
-						health = 0;
-					}
-					else if (objectName == "spikesTrap")
-					{
-						field[x][y]->startProcess();
-
-						if ((int)field[x][y]->getValue() > 0)
-							this->takeDamage(field[x][y]->getValue());
-					}
-				}
-			}
+			this->checkObject(field[x][y], axis);
 		}
 	}
 }
@@ -392,9 +333,11 @@ bool Player::isAlive()
 	return (health > 0);
 }
 
-void Player::setField(std::vector<std::vector<BaseObject*>>& field)
+void Player::setData(vector<vector<BaseObject*>>& field, 
+	vector<MoveObject*>& moveObjects)
 {
 	this->field = field;
+	this->moveObjects = moveObjects;
 }
 
 void Player::takeDamage(int damage)
@@ -415,6 +358,132 @@ void Player::healing(int healthValue)
 	health += healthValue;
 
 	healthBar.update(health);
+}
+
+void Player::checkObject(BaseObject* object, char axis)
+{
+	if (object != NULL && !object->isDestroyed())
+	{
+		objectName = object->getName();
+
+		if (baseRect.intersects(object->getRect()) &&
+			(objectName == "wall" || objectName == "selfDestructiveBlock" ||
+				objectName == "cannon" || objectName == "jumpBoost" || objectName == "moveWall"))
+		{
+			if (axis == 'x')
+			{
+				if (velocity.x > 0)
+				{
+					if (objectName == "moveWall")
+						velocity.x = object->getValue();
+
+					position.x = object->getRect().left - baseRect.width - 0.1;
+					sidePressure[1]++;
+				}
+				else if (velocity.x < 0)
+				{
+					if (objectName == "moveWall")
+						velocity.x = object->getValue();
+					
+					position.x = object->getRect().left + object->getRect().width + 0.1;
+					sidePressure[0]++;
+				}
+				else if (objectName == "moveWall")
+				{
+					velocity.x = object->getValue();
+
+					if (object->getValue() > 0)
+					{
+						position.x = object->getRect().left + object->getRect().width + 0.1;
+						sidePressure[0]++;
+					}
+					else
+					{
+						position.x = object->getRect().left - baseRect.width - 0.1;
+						sidePressure[1]++;
+					}
+				}
+			}
+			else if (axis == 'y')
+			{ 
+				if (velocity.y > 0)
+				{
+					position.y = object->getRect().top - texture.getSize().y - 0.1;
+					if (!jumpBoost)
+					{
+						onGround = true;
+						n = 1;
+						jumpForceNow = jumpForce;
+						sidePressure[2]++;
+					}
+
+					if (objectName == "selfDestructiveBlock")
+					{
+						object->startProcess();
+					}
+					else if (objectName == "jumpBoost")
+					{
+						onGround = false;
+						jumpReady = false;
+						jumpBoost = true;
+
+						jumpForceNow = jumpForce - Vector2f(0, object->getValue());
+					}
+					else if (objectName == "moveWall")
+					{
+						velocity.x = object->getValue();
+					}
+				}
+				else if (velocity.y < 0)
+				{
+					jumpForceNow.y = 0;
+					position.y = object->getRect().top + object->getRect().height + 0.1;
+					sidePressure[3]++;
+				}
+			}
+		}
+
+		if (objectName == "platform")
+		{
+			if (axis == 'y')
+			{
+				if (velocity.y > 0 && position.y + baseRect.height <= object->getRect().top +
+					(int)object->getRect().height
+					&& !(((controlType == "joystickX" || controlType == "joystickD") &&
+						(Joystick::getAxisPosition(0, Joystick::Y) == 100 ||
+							Joystick::getAxisPosition(0, Joystick::PovY) == -100)) ||
+						(controlType == "keyboard" && Keyboard::isKeyPressed(Keyboard::S))))
+				{
+					position.y = object->getRect().top - texture.getSize().y - 0.1;
+					if (!jumpBoost)
+					{
+						onGround = true;
+						n = 1;
+						jumpForceNow = jumpForce;
+					}
+				}
+			}
+		}
+
+		if (additionalRect.intersects(object->getRect()))
+		{
+			if (objectName == "spikes" && object->getValue() > 0)
+			{
+				this->takeDamage((int)object->getValue());
+			}
+			else if (objectName == "killZone")
+			{
+				health = 0;
+			}
+			else if (objectName == "spikesTrap")
+			{
+				object->startProcess();
+
+				if ((int)object->getValue() > 0)
+					this->takeDamage(object->getValue());
+			}
+		}
+	}
 }
 
 Rect<float> Player::getAdditionalRect()

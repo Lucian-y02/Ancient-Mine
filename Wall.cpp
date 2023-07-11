@@ -100,15 +100,9 @@ double JumpBoost::getValue()
 MoveObject::MoveObject(string moveSide, string name, string path) :
 	BaseObject(name, path)
 {
-	this->field = field;
 	this->moveSide = moveSide;
 
-	additionalRect.width = 58;
-	additionalRect.height = 58;
-
 	showRect.setFillColor(Color(100, 100, 100));
-	showAdditionalRect.setFillColor(Color(50, 50, 50));
-	showAdditionalRect.setSize(Vector2f(additionalRect.width, additionalRect.height));
 }
 
 void MoveObject::draw(RenderWindow& window)
@@ -116,7 +110,6 @@ void MoveObject::draw(RenderWindow& window)
 	if (rectanglesVisible)
 	{
 		window.draw(showRect);
-		window.draw(showAdditionalRect);
 
 		for (Marker marker : markers)
 		{
@@ -146,11 +139,7 @@ void MoveObject::update(double delta)
 	baseRect.left = position.x;
 	baseRect.top = position.y;
 
-	additionalRect.left = position.x + (64.0 - additionalRect.width) / 2;
-	additionalRect.top = position.y + (64.0 - additionalRect.height) / 2;
-
 	showRect.setPosition(position);
-	showAdditionalRect.setPosition(Vector2f(additionalRect.left, additionalRect.top));
 }
 
 void MoveObject::setPosition(Vector2f newPosition)
@@ -161,11 +150,7 @@ void MoveObject::setPosition(Vector2f newPosition)
 	baseRect.left = position.x;
 	baseRect.top = position.y;
 
-	additionalRect.left = position.x + (64.0 - additionalRect.width) / 2;
-	additionalRect.top = position.y + (64.0 - additionalRect.height) / 2;
-
 	showRect.setPosition(position);
-	showAdditionalRect.setPosition(Vector2f(additionalRect.left, additionalRect.top));
 }
 
 void MoveObject::addMarker(Vector2f position, string side, string moveSide)
